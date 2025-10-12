@@ -22,14 +22,14 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
         userRepository.save(user);
-        return "Successfully registered";
+        return jwtService.generateToken(String.valueOf(user.getId()));
     }
 
     public String login(AuthRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return jwtService.generateToken(user.getId());
+            return jwtService.generateToken(String.valueOf(user.getId()));
         }
         throw new RuntimeException("Invalid credentials");
     }

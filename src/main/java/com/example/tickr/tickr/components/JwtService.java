@@ -20,9 +20,9 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(Integer userId) {
+    public String generateToken(String userId) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userId.toString());
+        return createToken(claims, userId);
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
