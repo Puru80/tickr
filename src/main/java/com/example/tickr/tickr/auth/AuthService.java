@@ -15,7 +15,7 @@ public class AuthService {
 
     public String register(AuthRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already taken");
+            throw new IllegalArgumentException("Email already taken");
         }
         User user = User.builder()
                 .email(request.getEmail())
