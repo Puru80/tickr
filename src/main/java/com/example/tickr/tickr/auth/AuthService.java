@@ -1,0 +1,45 @@
+package com.example.tickr.tickr.auth;
+
+import com.example.tickr.tickr.components.JwtService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public AuthResponse register(AuthRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already taken");
+        }
+
+        User user = User.builder()
+            .name(request.getName())
+            .email(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .build();
+        userRepository.save(user);
+        return AuthResponse.builder()
+            .token(jwtService.generateToken(String.valueOf(user.getId())))
+            .user(user)
+            .build();
+    }
+
+    public AuthResponse login(AuthRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return AuthResponse.builder()
+                .token(jwtService.generateToken(String.valueOf(user.getId())))
+                .user(user)
+                .build();
+
+        }
+        throw new RuntimeException("Invalid credentials");
+    }
+}
