@@ -10,13 +10,13 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class FilterConfig {
 
-    private final AuthFilter authFilter;
-
-    @Bean
-    public FilterRegistrationBean<AuthFilter> registrationBean() {
-        FilterRegistrationBean<AuthFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(authFilter);
-        registrationBean.addUrlPatterns("/api/v1/*"); // Set the URL patterns to protect
-        return registrationBean;
-    }
+//    private final AuthFilter authFilter;
+//
+//    @Bean
+//    public FilterRegistrationBean<AuthFilter> registrationBean() {
+//        FilterRegistrationBean<AuthFilter> registrationBean = new FilterRegistrationBean<>();
+//        registrationBean.setFilter(authFilter);
+//        registrationBean.addUrlPatterns("/api/v1/*"); // Set the URL patterns to protect
+//        return registrationBean;
+//    }
 }
