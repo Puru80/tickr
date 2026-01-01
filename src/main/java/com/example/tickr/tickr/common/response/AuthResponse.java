@@ -1,5 +1,6 @@
-package com.example.tickr.tickr.auth;
+package com.example.tickr.tickr.common.response;
 
+import com.example.tickr.tickr.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

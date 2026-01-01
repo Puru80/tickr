@@ -1,4 +1,4 @@
-package com.example.tickr.tickr.auth;
+package com.example.tickr.tickr.common.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
