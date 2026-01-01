@@ -1,6 +1,9 @@
-package com.example.tickr.tickr.auth;
+package com.example.tickr.tickr.service;
 
-import com.example.tickr.tickr.components.JwtService;
+import com.example.tickr.tickr.model.User;
+import com.example.tickr.tickr.repository.UserRepository;
+import com.example.tickr.tickr.common.request.AuthRequest;
+import com.example.tickr.tickr.common.response.AuthResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,7 @@ public class AuthService {
 
     public AuthResponse login(AuthRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new RuntimeException("User not found"));
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return AuthResponse.builder()
                 .token(jwtService.generateToken(String.valueOf(user.getId())))
@@ -41,5 +44,10 @@ public class AuthService {
 
         }
         throw new RuntimeException("Invalid credentials");
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

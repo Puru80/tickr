@@ -1,6 +1,8 @@
-package com.example.tickr.tickr.auth;
+package com.example.tickr.tickr.controller;
 
 import com.example.tickr.tickr.TickrResponse;
+import com.example.tickr.tickr.common.request.AuthRequest;
+import com.example.tickr.tickr.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

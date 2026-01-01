@@ -1,4 +1,4 @@
-package com.example.tickr.tickr.components;
+package com.example.tickr.tickr.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

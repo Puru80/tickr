@@ -1,8 +1,7 @@
-package com.example.tickr.tickr.auth;
+package com.example.tickr.tickr.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -15,8 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "watchlist")
+public class Watchlist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,20 +25,17 @@ public class User {
     private String name;
 
     @NonNull
-    private String email;
-
-    @NonNull
-    private String password;
+    private UUID userId;
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(password, user.password);
+        Watchlist watchlist = (Watchlist) o;
+        return Objects.equals(id, watchlist.id) && Objects.equals(name, watchlist.name) && Objects.equals(userId, watchlist.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password);
+        return Objects.hash(id, name, userId);
     }
 }

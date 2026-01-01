@@ -1,6 +1,6 @@
-package com.example.tickr.tickr.auth;
+package com.example.tickr.tickr.config;
 
-import com.example.tickr.tickr.components.JwtService;
+import com.example.tickr.tickr.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
