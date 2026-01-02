@@ -19,6 +19,11 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if (request.getRequestURI().startsWith("/api/v1/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -26,7 +31,7 @@ public class AuthFilter extends OncePerRequestFilter {
         }
         String jwt = authHeader.substring(7);
         try {
-            Integer userId = jwtService.extractUserId(jwt);
+            UUID userId = jwtService.extractUserId(jwt);
             request.setAttribute("userId", userId);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
