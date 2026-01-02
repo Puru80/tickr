@@ -41,6 +41,15 @@ public class WatchlistService {
         watchlistRepository.save(new Watchlist(watchlistName, user.getId()));
     }
 
+    public void createWatchlistForUser(String watchlistName, UUID userId) {
+        User user = authService.getUserById(userId);
+
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with id: " + userId);
+        }
+
+        watchlistRepository.save(new Watchlist(watchlistName, user.getId()));
+    }
     public void renameWatchlist(UUID watchlistId, String newName) {
         // Implementation for renaming a watchlist
         Watchlist watchlist = watchlistRepository.findById(watchlistId)

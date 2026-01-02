@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -28,7 +30,7 @@ public class AuthService {
             .build();
         userRepository.save(user);
         return AuthResponse.builder()
-            .token(jwtService.generateToken(String.valueOf(user.getId())))
+            .token(jwtService.generateToken(user.getId()))
             .user(user)
             .build();
     }
@@ -38,7 +40,7 @@ public class AuthService {
             .orElseThrow(() -> new RuntimeException("User not found"));
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return AuthResponse.builder()
-                .token(jwtService.generateToken(String.valueOf(user.getId())))
+                .token(jwtService.generateToken(user.getId()))
                 .user(user)
                 .build();
 
@@ -48,6 +50,11 @@ public class AuthService {
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

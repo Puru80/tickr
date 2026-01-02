@@ -12,6 +12,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -20,9 +21,9 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(String userId) {
+    public String generateToken(UUID userId) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userId);
+        return createToken(claims, userId.toString());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -53,8 +54,8 @@ public class JwtService {
                 .getBody();
     }
 
-    public Integer extractUserId(String token) {
-        return Integer.parseInt(extractClaim(token, Claims::getSubject));
+    public UUID extractUserId(String token) {
+        return UUID.fromString(extractClaim(token, Claims::getSubject));
     }
 
     public Boolean isTokenExpired(String token) {
