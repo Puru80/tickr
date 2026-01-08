@@ -1,9 +1,10 @@
 package com.example.tickr.tickr.controller;
 
+import com.example.tickr.tickr.TickrResponse;
+import com.example.tickr.tickr.common.utils.RequestUtils;
 import com.example.tickr.tickr.service.WatchlistService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/watchlists")
@@ -15,8 +16,21 @@ public class WatchlistController {
         this.watchlistService = watchlistService;
     }
 
-    @GetMapping("/list")
-    public String testEndpoint() {
-        return "Watchlist Controller is working!";
+    @GetMapping
+    public ResponseEntity<TickrResponse> testEndpoint() {
+        return new ResponseEntity<>(
+            new TickrResponse("Successfully retrieved watchlists",
+                watchlistService.getAllWatchlistsForUser(RequestUtils.getUserIdFromRequest())),
+            org.springframework.http.HttpStatus.OK
+        );
+    }
+
+    @PostMapping
+    public ResponseEntity<TickrResponse> createWatchlist(@RequestBody String watchlistName) {
+        watchlistService.createWatchlistForUser(watchlistName, RequestUtils.getUserIdFromRequest());
+        return new ResponseEntity<>(
+            new TickrResponse("Successfully created watchlist", null),
+            org.springframework.http.HttpStatus.OK
+        );
     }
 }
