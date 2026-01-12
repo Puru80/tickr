@@ -3,6 +3,7 @@ package com.example.tickr.tickr.controller;
 import com.example.tickr.tickr.TickrResponse;
 import com.example.tickr.tickr.common.utils.RequestUtils;
 import com.example.tickr.tickr.service.WatchlistService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,5 +33,11 @@ public class WatchlistController {
             new TickrResponse("Successfully created watchlist", null),
             org.springframework.http.HttpStatus.OK
         );
+    }
+
+    @GetMapping("/{id}/instruments")
+    public ResponseEntity<String> get(@PathVariable String id) {
+        return new ResponseEntity<>("Instruments in watchlist " + id, HttpStatus.OK);
+
     }
 }

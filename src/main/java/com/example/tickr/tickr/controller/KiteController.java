@@ -1,13 +1,11 @@
 package com.example.tickr.tickr.controller;
 
+import com.example.tickr.tickr.service.InstrumentService;
 import com.example.tickr.tickr.service.KiteConnectService;
 import com.example.tickr.tickr.service.MarketDataService;
 import com.zerodhatech.kiteconnect.KiteConnect;
 import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -17,10 +15,12 @@ public class KiteController {
 
     private final KiteConnectService kiteConnectService;
     private final MarketDataService marketDataService;
+    private final InstrumentService instrumentService;
 
-    public KiteController(KiteConnectService kiteConnectService, MarketDataService marketDataService) {
+    public KiteController(KiteConnectService kiteConnectService, MarketDataService marketDataService, InstrumentService instrumentService) {
         this.kiteConnectService = kiteConnectService;
         this.marketDataService = marketDataService;
+        this.instrumentService = instrumentService;
     }
 
     @GetMapping("/session")
@@ -38,9 +38,14 @@ public class KiteController {
 
     @GetMapping("/market-data")
     public String fetchMarketData() throws IOException, KiteException {
-//        marketDataService.getHistoricalData();
-        marketDataService.getQuote();
+        marketDataService.fetchInstruments();
         return "KiteConnect Data Fetch";
+    }
+
+    @PostMapping("/update-instruments")
+    public String updateInstruments() {
+        instrumentService.updateInstruments();
+        return "Instruments updated successfully.";
     }
 
 }
