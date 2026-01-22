@@ -5,6 +5,7 @@ import com.example.tickr.tickr.service.KiteConnectService;
 import com.example.tickr.tickr.service.MarketDataService;
 import com.zerodhatech.kiteconnect.KiteConnect;
 import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -46,6 +47,12 @@ public class KiteController {
     public String updateInstruments() {
         instrumentService.updateInstruments();
         return "Instruments updated successfully.";
+    }
+
+    @GetMapping("/quote")
+    public ResponseEntity<String> get() throws IOException, KiteException {
+        marketDataService.getQuote();
+        return ResponseEntity.ok("Kite Controller is working!");
     }
 
 }

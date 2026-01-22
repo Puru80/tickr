@@ -1,5 +1,6 @@
 package com.example.tickr.tickr.service;
 
+import com.example.tickr.tickr.model.InstrumentInfo;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
@@ -7,7 +8,9 @@ import com.zerodhatech.kiteconnect.KiteConnect;
 import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
 import com.zerodhatech.models.HistoricalData;
 import com.zerodhatech.models.Instrument;
+import com.zerodhatech.models.OHLCQuote;
 import com.zerodhatech.models.Quote;
+import org.springframework.aop.IntroductionInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketDataService {
@@ -27,6 +31,7 @@ public class MarketDataService {
     private final KiteConnect kiteConnect;
 //    private static final String HISTORICAL_DATA_CSV = "src/main/resources/data/historical_data.csv";
     private static final String INSTRUMENT_DATA_CSV = "src/main/resources/data/instrument_data.csv";
+    private static final String STOCK_DATA_CSV = "src/main/resources/data/dhan_stock_data.csv";
 
 
     @Autowired
@@ -140,21 +145,61 @@ public class MarketDataService {
         return instruments;
     }
 
+    public List<InstrumentInfo> getInstrumentDetailsFromCSV() {
+        List<InstrumentInfo> instruments = new ArrayList<>();
+        try (CSVReader reader = new CSVReader(new FileReader(STOCK_DATA_CSV))) {
+            // Skip header
+            reader.skip(1);
+            List<String[]> allRows = reader.readAll();
+            for (String[] row : allRows) {
+                InstrumentInfo instrument = InstrumentInfo.builder()
+                    .isin(row[0])
+                    .tradingSymbol(row[1])
+                    .name(row[2])
+                    .exchange(row[3])
+                    .build();
+
+                instruments.add(instrument);
+            }
+        } catch (IOException | CsvException e) {
+            throw new RuntimeException(e);
+        }
+
+        return instruments;
+    }
+
 
     public void getQuote() throws KiteException, IOException {
-        // Get quotes returns quote for desired tradingsymbol.
-        String[] instruments = {"256265","BSE:INFY", "NSE:APOLLOTYRE", "NSE:NIFTY 50", "24507906"};
+        String[] instruments = {"256265", "BSE:INFY", "NSE:APOLLOTYRE", "NSE:NIFTY 50", "24507906", "BSE:500325"};
         Map<String, Quote> quotes = kiteConnect.getQuote(instruments);
-        System.out.println(quotes.get("NSE:APOLLOTYRE").instrumentToken+"");
-        System.out.println(quotes.get("NSE:APOLLOTYRE").oi +"");
+        System.out.println(quotes.get("NSE:APOLLOTYRE").instrumentToken + "");
+        System.out.println(quotes.get("NSE:APOLLOTYRE").oi + "");
         System.out.println(quotes.get("NSE:APOLLOTYRE").depth.buy.get(4).getPrice());
         System.out.println(quotes.get("NSE:APOLLOTYRE").timestamp);
-        System.out.println(quotes.get("NSE:APOLLOTYRE").lowerCircuitLimit+"");
-        System.out.println(quotes.get("NSE:APOLLOTYRE").upperCircuitLimit+"");
+        System.out.println(quotes.get("NSE:APOLLOTYRE").lowerCircuitLimit + "");
+        System.out.println(quotes.get("NSE:APOLLOTYRE").upperCircuitLimit + "");
         System.out.println(quotes.get("24507906").oiDayHigh);
         System.out.println(quotes.get("24507906").oiDayLow);
     }
 
+    public double getLTP(String instrument) throws KiteException, IOException {
+        String[] instruments = {instrument};
+        Map<String, Quote> quotes = kiteConnect.getQuote(instruments);
+        return quotes.get(instrument).lastPrice;
+    }
 
+    public Map<String, Double> getQuotes(String[] instruments) throws KiteException, IOException {
+        return kiteConnect.getQuote(instruments)
+            .entrySet()
+            .stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().lastPrice
+            ));
+    }
+
+    public Map<String, OHLCQuote> getOHLC(String[] instruments) throws KiteException, IOException {
+        return kiteConnect.getOHLC(instruments);
+    }
 
 }

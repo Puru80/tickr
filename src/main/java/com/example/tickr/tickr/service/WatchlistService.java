@@ -1,10 +1,17 @@
 package com.example.tickr.tickr.service;
 
+import com.example.tickr.tickr.common.request.WatchlistItemRequest;
 import com.example.tickr.tickr.model.User;
 import com.example.tickr.tickr.model.Watchlist;
+import com.example.tickr.tickr.model.WatchlistItem;
+import com.example.tickr.tickr.model.enums.ReferenceType;
+import com.example.tickr.tickr.repository.InstrumentRepository;
+import com.example.tickr.tickr.repository.WatchlistItemRepository;
 import com.example.tickr.tickr.repository.WatchlistRepository;
+import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,11 +19,18 @@ import java.util.UUID;
 public class WatchlistService {
 
     private final WatchlistRepository watchlistRepository;
+    private final WatchlistItemRepository watchlistItemRepository;
+    private final InstrumentRepository instrumentRepository;
     private final AuthService authService;
+    private final MarketDataService marketDataService;
 
-    public WatchlistService(WatchlistRepository watchlistRepository, AuthService authService) {
+    public WatchlistService(WatchlistRepository watchlistRepository, WatchlistItemRepository watchlistItemRepository,
+                            InstrumentRepository instrumentRepository, AuthService authService, MarketDataService marketDataService) {
         this.watchlistRepository = watchlistRepository;
+        this.watchlistItemRepository = watchlistItemRepository;
+        this.instrumentRepository = instrumentRepository;
         this.authService = authService;
+        this.marketDataService = marketDataService;
     }
 
     public List<Watchlist> getAllWatchlistsForUser(UUID userId) {
@@ -53,14 +67,43 @@ public class WatchlistService {
     public void renameWatchlist(UUID watchlistId, String newName) {
         // Implementation for renaming a watchlist
         Watchlist watchlist = watchlistRepository.findById(watchlistId)
-                .orElseThrow(() -> new IllegalArgumentException("Watchlist not found with ID: " + watchlistId));
+            .orElseThrow(() -> new IllegalArgumentException("Watchlist not found with ID: " + watchlistId));
         watchlist.setName(newName);
         watchlistRepository.save(watchlist);
     }
 
+    // TODO: Implementation for deleting a watchlist by its ID
     public void deleteWatchlist(UUID watchlistId) {
-        // Implementation for deleting a watchlist by its ID
         watchlistRepository.deleteById(watchlistId);
+    }
+
+    public void addInstrumentToWatchlist(UUID watchlistId, WatchlistItemRequest watchlistItemRequest) throws IOException, KiteException {
+        watchlistRepository.findById(watchlistId).orElseThrow(() -> new IllegalArgumentException("Watchlist not found with ID: " + watchlistId));
+        instrumentRepository.findByTradingSymbolAndExchange(
+                watchlistItemRequest.getTradingSymbol(),
+                watchlistItemRequest.getExchange())
+            .orElseThrow(() -> new IllegalArgumentException("Instrument not found with Trading Symbol: " + watchlistItemRequest.getTradingSymbol() + " and Exchange: " + watchlistItemRequest.getExchange()));
+
+        System.out.println("Instrument details: " + watchlistItemRequest.getReferencePrice());
+        System.out.println("Reference Type: " + watchlistItemRequest.getReferenceType().name());
+        System.out.println("Refernce Type EQ: " + watchlistItemRequest.getReferenceType().equals(ReferenceType.CUSTOM));
+
+        double referencePrice = watchlistItemRequest.getReferenceType().equals(ReferenceType.CUSTOM) ?
+            watchlistItemRequest.getReferencePrice() :
+            marketDataService.getLTP(
+                watchlistItemRequest.getExchange() + ":" +
+                    watchlistItemRequest.getTradingSymbol()
+            );
+
+        WatchlistItem watchlistItem = WatchlistItem.builder()
+            .watchlistId(watchlistId)
+            .tradingSymbol(watchlistItemRequest.getTradingSymbol())
+            .exchange(watchlistItemRequest.getExchange())
+            .referenceType(watchlistItemRequest.getReferenceType())
+            .referencePrice(referencePrice)
+            .build();
+
+        watchlistItemRepository.save(watchlistItem);
     }
 
 }
