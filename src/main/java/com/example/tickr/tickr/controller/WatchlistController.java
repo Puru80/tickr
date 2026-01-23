@@ -82,4 +82,13 @@ public class WatchlistController {
             org.springframework.http.HttpStatus.OK
         );
     }
+
+    @DeleteMapping("/instruments/{id}")
+    public ResponseEntity<TickrResponse> deleteWatchlistItem(@PathVariable String id) {
+        watchlistItemService.deleteWatchlistItemById(UUID.fromString(id));
+        return new ResponseEntity<>(
+            new TickrResponse("Successfully deleted watchlist item", null),
+            org.springframework.http.HttpStatus.OK
+        );
+    }
 }

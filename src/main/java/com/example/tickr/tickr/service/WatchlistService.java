@@ -74,7 +74,6 @@ public class WatchlistService {
         watchlistRepository.save(watchlist);
     }
 
-    // TODO: Implementation for deleting a watchlist by its ID
     public void deleteWatchlist(UUID watchlistId) {
         watchlistItemService.deleteWatchlistItemsByWatchlistId(watchlistId);
         watchlistRepository.deleteById(watchlistId);

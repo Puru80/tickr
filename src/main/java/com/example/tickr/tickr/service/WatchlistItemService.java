@@ -52,4 +52,8 @@ public class WatchlistItemService {
     public void deleteWatchlistItemsByWatchlistId(UUID watchlistId) {
         watchlistItemRepository.deleteAllByWatchlistId(watchlistId);
     }
+
+    public void deleteWatchlistItemById(UUID instrumentId) {
+        watchlistItemRepository.deleteById(instrumentId);
+    }
 }
