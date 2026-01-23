@@ -1,5 +1,6 @@
 package com.example.tickr.tickr.model;
 
+import com.example.tickr.tickr.model.enums.InstrumentType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,18 +27,18 @@ public class InstrumentInfo {
     public double lastPrice;
     public String exchange;
 
-
-    public String instrumentType;
+    @Enumerated(EnumType.STRING)
+    public InstrumentType instrumentType;
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         InstrumentInfo that = (InstrumentInfo) o;
-        return Double.compare(lastPrice, that.lastPrice) == 0 && Objects.equals(id, that.id) && Objects.equals(isin, that.isin) && Objects.equals(tradingSymbol, that.tradingSymbol) && Objects.equals(name, that.name) && Objects.equals(exchange, that.exchange);
+        return Double.compare(lastPrice, that.lastPrice) == 0 && Objects.equals(id, that.id) && Objects.equals(isin, that.isin) && Objects.equals(tradingSymbol, that.tradingSymbol) && Objects.equals(name, that.name) && Objects.equals(exchange, that.exchange) && instrumentType == that.instrumentType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, isin, tradingSymbol, name, lastPrice, exchange);
+        return Objects.hash(id, isin, tradingSymbol, name, lastPrice, exchange, instrumentType);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -28,6 +29,7 @@ public class InstrumentService {
     public void updateInstruments() {
         instrumentRepository.deleteAllInBatch();
         List<InstrumentInfo> instruments = marketDataService.getInstrumentDetailsFromCSV();
+        Collections.shuffle(instruments);
 
         instrumentRepository.saveAll(instruments);
     }

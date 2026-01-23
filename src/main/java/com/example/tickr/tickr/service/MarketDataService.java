@@ -1,6 +1,7 @@
 package com.example.tickr.tickr.service;
 
 import com.example.tickr.tickr.model.InstrumentInfo;
+import com.example.tickr.tickr.model.enums.InstrumentType;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
@@ -157,6 +158,7 @@ public class MarketDataService {
                     .tradingSymbol(row[1])
                     .name(row[2])
                     .exchange(row[3])
+                    .instrumentType(row[4].equals("ES") ? InstrumentType.EQUITY : InstrumentType.ETF)
                     .build();
 
                 instruments.add(instrument);
