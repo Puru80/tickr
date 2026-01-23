@@ -23,14 +23,16 @@ public class WatchlistService {
     private final InstrumentRepository instrumentRepository;
     private final AuthService authService;
     private final MarketDataService marketDataService;
+    private final WatchlistItemService watchlistItemService;
 
     public WatchlistService(WatchlistRepository watchlistRepository, WatchlistItemRepository watchlistItemRepository,
-                            InstrumentRepository instrumentRepository, AuthService authService, MarketDataService marketDataService) {
+                            InstrumentRepository instrumentRepository, AuthService authService, MarketDataService marketDataService, WatchlistItemService watchlistItemService) {
         this.watchlistRepository = watchlistRepository;
         this.watchlistItemRepository = watchlistItemRepository;
         this.instrumentRepository = instrumentRepository;
         this.authService = authService;
         this.marketDataService = marketDataService;
+        this.watchlistItemService = watchlistItemService;
     }
 
     public List<Watchlist> getAllWatchlistsForUser(UUID userId) {
@@ -74,6 +76,7 @@ public class WatchlistService {
 
     // TODO: Implementation for deleting a watchlist by its ID
     public void deleteWatchlist(UUID watchlistId) {
+        watchlistItemService.deleteWatchlistItemsByWatchlistId(watchlistId);
         watchlistRepository.deleteById(watchlistId);
     }
 

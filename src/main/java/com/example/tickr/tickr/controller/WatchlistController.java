@@ -54,6 +54,15 @@ public class WatchlistController {
         );
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<TickrResponse> deleteWatchlist(@PathVariable String id) {
+        watchlistService.deleteWatchlist(UUID.fromString(id));
+        return new ResponseEntity<>(
+            new TickrResponse("Successfully deleted watchlist", null),
+            org.springframework.http.HttpStatus.OK
+        );
+    }
+
     @GetMapping("/{id}/instruments")
     public ResponseEntity<TickrResponse> getWatchlistItems(@PathVariable String id) throws IOException, KiteException {
         return new ResponseEntity<>(

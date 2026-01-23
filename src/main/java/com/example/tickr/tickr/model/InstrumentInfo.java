@@ -26,6 +26,9 @@ public class InstrumentInfo {
     public double lastPrice;
     public String exchange;
 
+
+    public String instrumentType;
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

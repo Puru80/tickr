@@ -5,6 +5,7 @@ import com.example.tickr.tickr.model.enums.ReferenceType;
 import com.example.tickr.tickr.repository.WatchlistItemRepository;
 import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
 import com.zerodhatech.models.OHLCQuote;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -47,5 +48,8 @@ public class WatchlistItemService {
         return watchlistItemRepository.findWatchlistItemByWatchlistId(watchlistId);
     }
 
-
+    @Transactional
+    public void deleteWatchlistItemsByWatchlistId(UUID watchlistId) {
+        watchlistItemRepository.deleteAllByWatchlistId(watchlistId);
+    }
 }
