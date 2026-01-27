@@ -36,6 +36,10 @@ public class AuthFilter extends OncePerRequestFilter {
         }
         String jwt = authHeader.substring(7);
         try {
+            if (!jwtService.validateToken(jwt)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+                return;
+            }
             UUID userId = jwtService.extractUserId(jwt);
             request.setAttribute("userId", userId);
             filterChain.doFilter(request, response);
