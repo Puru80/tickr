@@ -48,13 +48,24 @@ public class AuthService {
         throw new RuntimeException("Invalid credentials");
     }
 
+    public void logout(String token) {
+        jwtService.invalidateToken(token);
+    }
+
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public User getUserById(UUID userId) {
-        return userRepository.findById(userId)
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
+
+        User userResponse = new User();
+        userResponse.setId(user.getId());
+        userResponse.setName(user.getName());
+        userResponse.setEmail(user.getEmail());
+
+        return userResponse;
     }
 }
