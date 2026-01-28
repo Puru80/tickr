@@ -20,28 +20,25 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class MarketDataService {
 
     private final KiteConnect kiteConnect;
-//    private static final String HISTORICAL_DATA_CSV = "src/main/resources/data/historical_data.csv";
     private static final String INSTRUMENT_DATA_CSV = "src/main/resources/data/instrument_data.csv";
     private static final String STOCK_DATA_CSV = "src/main/resources/data/dhan_stock_data.csv";
+    private static final String[] MARKET_OVERVIEW_INSTRUMENTS = {
+        "NSE:NIFTY 50",
+        "NSE:NIFTY BANK",
+        "BSE:SENSEX",
+    };
 
 
     @Autowired
     public MarketDataService(KiteConnect kiteConnect) {
         this.kiteConnect = kiteConnect;
-    }
-
-    public String fetchMarketData() {
-        return kiteConnect.getApiKey();
     }
 
     public void fetchInstruments() {
@@ -202,6 +199,16 @@ public class MarketDataService {
 
     public Map<String, OHLCQuote> getOHLC(String[] instruments) throws KiteException, IOException {
         return kiteConnect.getOHLC(instruments);
+    }
+
+    public Map<String, Quote> getMarketOverview() {
+        try {
+            return kiteConnect.getQuote(MARKET_OVERVIEW_INSTRUMENTS);
+        } catch (KiteException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return new HashMap<>();
     }
 
 }
