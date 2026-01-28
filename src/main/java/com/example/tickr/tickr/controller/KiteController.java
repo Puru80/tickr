@@ -25,16 +25,10 @@ public class KiteController {
     }
 
     @GetMapping("/session")
-    public String getStatus(@RequestParam String action,
-                            @RequestParam String status,
-                            @RequestParam(name = "request_token") String requestToken ) throws IOException, KiteException {
-        System.out.println("Action: " + action);
-        System.out.println("Status: " + status);
-        System.out.println("Request Token: " + requestToken);
-        KiteConnect authenticatedKiteConnect = kiteConnectService.generateSession(requestToken);
-        System.out.println("KiteConnect session successfully generated. Access Token: " + authenticatedKiteConnect.getAccessToken());
-
-        return "KiteConnect session successfully generated. Access Token: " + authenticatedKiteConnect.getAccessToken();
+    public String getStatus(@RequestParam(name = "request_token") String requestToken ) throws IOException, KiteException {
+        kiteConnectService.generateSession(requestToken);
+        System.out.println("KiteConnect session successfully generated");
+        return "KiteConnect session successfully generated";
     }
 
     @GetMapping("/market-data")

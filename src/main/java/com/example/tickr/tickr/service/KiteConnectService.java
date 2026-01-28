@@ -24,15 +24,13 @@ public class KiteConnectService {
         this.appConfig = appConfig;
     }
 
-    public KiteConnect generateSession(String requestToken) throws IOException, KiteException {
+    public void generateSession(String requestToken) throws IOException, KiteException {
         // Get accessToken as follows,
         User user = kiteConnect.generateSession(requestToken, appConfig.getKiteApiSecret());
 
         // Set request token and public token which are obtained from login process.
         kiteConnect.setAccessToken(user.accessToken);
         kiteConnect.setPublicToken(user.publicToken);
-
-        return kiteConnect;
     }
 
     /*public String generateRequestToken() throws IOException, CodeGenerationException {
