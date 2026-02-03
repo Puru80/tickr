@@ -21,7 +21,16 @@ public class MarketController {
 
         return new ResponseEntity<>(
             new TickrResponse("Market overview fetched successfully",
-                marketService.getMarketOverview()),  // Replace null with actual data
+                marketService.getMarketOverview()),
+            HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<TickrResponse> getMarketStatus() {
+        return new ResponseEntity<>(
+            new TickrResponse("Market status fetched successfully",
+                marketService.getMarketStatus()),
             HttpStatus.OK
         );
     }
