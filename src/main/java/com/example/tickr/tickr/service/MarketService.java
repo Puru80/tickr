@@ -3,7 +3,6 @@ package com.example.tickr.tickr.service;
 import com.example.tickr.tickr.common.response.MarketStatusResponse;
 import com.example.tickr.tickr.common.response.QuoteResponse;
 import com.zerodhatech.models.Quote;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 import java.time.*;

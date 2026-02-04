@@ -5,6 +5,8 @@ import com.example.tickr.tickr.service.KiteConnectService;
 import com.example.tickr.tickr.service.MarketDataService;
 import com.zerodhatech.kiteconnect.KiteConnect;
 import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/kite")
 public class KiteController {
+
+    private final Logger logger = LoggerFactory.getLogger(KiteController.class);
 
     private final KiteConnectService kiteConnectService;
     private final MarketDataService marketDataService;
@@ -27,7 +31,7 @@ public class KiteController {
     @GetMapping("/session")
     public String getStatus(@RequestParam(name = "request_token") String requestToken ) throws IOException, KiteException {
         kiteConnectService.generateSession(requestToken);
-        System.out.println("KiteConnect session successfully generated");
+        logger.info("KiteConnect session successfully generated");
         return "KiteConnect session successfully generated";
     }
 
