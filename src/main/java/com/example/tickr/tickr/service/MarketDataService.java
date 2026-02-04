@@ -11,6 +11,8 @@ import com.zerodhatech.models.HistoricalData;
 import com.zerodhatech.models.Instrument;
 import com.zerodhatech.models.OHLCQuote;
 import com.zerodhatech.models.Quote;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.IntroductionInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class MarketDataService {
+
+    private final Logger logger = LoggerFactory.getLogger(MarketDataService.class);
 
     private final KiteConnect kiteConnect;
     private static final String INSTRUMENT_DATA_CSV = "src/main/resources/data/instrument_data.csv";
@@ -44,7 +48,6 @@ public class MarketDataService {
     public void fetchInstruments() {
         try {
             List<Instrument> instruments = kiteConnect.getInstruments();
-            System.out.println("Number of instruments fetched: " + instruments.size());
 
             writeInstrumentInfoData(instruments);
 //            return instruments;
@@ -69,13 +72,12 @@ public class MarketDataService {
             }
 
             HistoricalData historicalData = kiteConnect.getHistoricalData(from, to, "BSE:INFY", "15minute", false, true);
-            System.out.println(historicalData.dataArrayList.size());
-            System.out.println(historicalData.dataArrayList.get(0).volume);
-            System.out.println(historicalData.dataArrayList.get(historicalData.dataArrayList.size() - 1).volume);
-            System.out.println(historicalData.dataArrayList.get(0).oi);
+            logger.info(String.valueOf(historicalData.dataArrayList.size()));
+            logger.info(String.valueOf(historicalData.dataArrayList.get(0).volume));
+            logger.info(String.valueOf(historicalData.dataArrayList.get(historicalData.dataArrayList.size() - 1).volume));
+            logger.info(String.valueOf(historicalData.dataArrayList.get(0).oi));
         } catch (Exception | KiteException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -106,7 +108,7 @@ public class MarketDataService {
                 writer.writeNext(row);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -138,7 +140,7 @@ public class MarketDataService {
             }
 
         } catch (IOException | CsvException | ParseException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return instruments;
     }

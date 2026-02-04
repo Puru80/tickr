@@ -86,10 +86,6 @@ public class WatchlistService {
                 watchlistItemRequest.getExchange())
             .orElseThrow(() -> new IllegalArgumentException("Instrument not found with Trading Symbol: " + watchlistItemRequest.getTradingSymbol() + " and Exchange: " + watchlistItemRequest.getExchange()));
 
-        System.out.println("Instrument details: " + watchlistItemRequest.getReferencePrice());
-        System.out.println("Reference Type: " + watchlistItemRequest.getReferenceType().name());
-        System.out.println("Refernce Type EQ: " + watchlistItemRequest.getReferenceType().equals(ReferenceType.CUSTOM));
-
         double referencePrice = watchlistItemRequest.getReferenceType().equals(ReferenceType.CUSTOM) ?
             watchlistItemRequest.getReferencePrice() :
             marketDataService.getLTP(
