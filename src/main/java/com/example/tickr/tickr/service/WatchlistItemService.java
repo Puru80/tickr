@@ -6,6 +6,8 @@ import com.example.tickr.tickr.repository.WatchlistItemRepository;
 import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
 import com.zerodhatech.models.OHLCQuote;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.util.UUID;
 @Service
 public class WatchlistItemService {
 
+    private final Logger logger = LoggerFactory.getLogger(WatchlistItemService.class);
     private final WatchlistItemRepository watchlistItemRepository;
     private final MarketDataService marketDataService;
 
@@ -25,7 +28,11 @@ public class WatchlistItemService {
     }
 
     public List<WatchlistItem> getWatchlistItemsByWatchlistId(UUID watchlistId) throws IOException, KiteException {
+        logger.info("Fetching watchlist items for watchlistId: {}", watchlistId);
+
         List<WatchlistItem> items = watchlistItemRepository.findWatchlistItemByWatchlistId(watchlistId);
+        logger.info("Found {} items in watchlist", items.size());
+
         if(items.isEmpty()) {
             return items;
         }
@@ -38,14 +45,22 @@ public class WatchlistItemService {
         Map<String, OHLCQuote> quoteMap = marketDataService.getOHLC(tokens);
 
         for(WatchlistItem item : items) {
-            if(!item.getReferenceType().equals(ReferenceType.CUSTOM)) {
-                item.setReferencePrice(quoteMap.get(item.getExchange() + ":" + item.getTradingSymbol()).ohlc.close);
+            String token = item.getExchange() + ":" + item.getTradingSymbol();
+
+            if(!quoteMap.containsKey(token)) {
+                logger.warn("No market data found for token: {}", token);
+                item.setLastPrice(0.0);
+                continue;
             }
 
-            item.setLastPrice(quoteMap.get(item.getExchange() + ":" + item.getTradingSymbol()).lastPrice);
+            if(!item.getReferenceType().equals(ReferenceType.CUSTOM)) {
+                item.setReferencePrice(quoteMap.get(token).ohlc.close);
+            }
+
+            item.setLastPrice(quoteMap.get(token).lastPrice);
         }
 
-        return watchlistItemRepository.findWatchlistItemByWatchlistId(watchlistId);
+        return items;
     }
 
     @Transactional

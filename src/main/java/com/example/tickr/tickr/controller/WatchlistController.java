@@ -7,6 +7,8 @@ import com.example.tickr.tickr.common.utils.RequestUtils;
 import com.example.tickr.tickr.service.WatchlistItemService;
 import com.example.tickr.tickr.service.WatchlistService;
 import com.zerodhatech.kiteconnect.kitehttp.exceptions.KiteException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/watchlists")
 public class WatchlistController {
 
+    private final Logger logger = LoggerFactory.getLogger(WatchlistController.class);
     private final WatchlistService watchlistService;
     private final WatchlistItemService watchlistItemService;
 
@@ -64,11 +67,18 @@ public class WatchlistController {
     }
 
     @GetMapping("/{id}/instruments")
-    public ResponseEntity<TickrResponse> getWatchlistItems(@PathVariable String id) throws IOException, KiteException {
-        return new ResponseEntity<>(
-            new TickrResponse("Instruments in watchlist: " + id,
-                watchlistItemService.getWatchlistItemsByWatchlistId(UUID.fromString(id))),
-            HttpStatus.OK);
+    public ResponseEntity<TickrResponse> getWatchlistItems(@PathVariable String id) {
+        ResponseEntity<TickrResponse> res = null;
+        try {
+            res = new ResponseEntity<>(
+                new TickrResponse("Instruments in watchlist: " + id,
+                    watchlistItemService.getWatchlistItemsByWatchlistId(UUID.fromString(id))),
+                HttpStatus.OK);
+        } catch (IOException | KiteException e) {
+            logger.info(e.getMessage());
+        }
+
+        return res;
 
     }
 
